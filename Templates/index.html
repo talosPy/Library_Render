@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tal's Library</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Tal's Library</h1>
+        <h3 class="mb-4">Books</h3>
+        <div class="row">
+            {% for book in books %}
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <img src="{{ book['image'] }}" class="card-img-top" alt="{{ book['book_name'] }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book['book_name'] }}</h5>
+                        <p class="card-text">Author: {{ book['author'] }}</p>
+                        <p class="card-text">Year: {{ book['year'] }}</p>
+                        <p class="card-text">Quantity: {{ book['quantity'] }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
