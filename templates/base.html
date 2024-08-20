@@ -5,25 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Tal's Library{% endblock %}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom {
+            background-color: #000000; /* Black background */
+            padding: 0.5rem 1rem; /* Adjust padding for a thinner navbar */
+        }
+        .navbar-custom .navbar-brand, 
+        .navbar-custom .nav-link {
+            color: #ffffff; /* White text */
+        }
+        .navbar-custom .navbar-brand:hover, 
+        .navbar-custom .nav-link:hover {
+            color: #cccccc; /* Light gray text on hover */
+        }
+        .navbar-custom .form-inline {
+            display: flex;
+            align-items: center;
+            margin-right: 2rem; /* Space from the logout button */
+        }
+        .navbar-custom .search-bar {
+            width: 150px; /* Smaller width for search bar */
+            border-radius: 20px; /* Border radius for search bar */
+        }
+        .navbar-custom .search-btn {
+            border: 1px solid orange;
+            color: orange;
+            background-color: transparent;
+            border-radius: 20px; /* Border radius for search button */
+            margin-left: 5px; /* Space between search input and button */
+        }
+        .navbar-custom .search-btn:hover {
+            background-color: orange;
+            color: #ffffff;
+        }
+        .navbar-custom .add-book-btn {
+            border: 1px solid orange;
+            color: orange;
+            background-color: transparent;
+            border-radius: 20px; /* Border radius for add book button */
+            margin-right: 1rem; /* Space between add book button and Library Options */
+        }
+        .navbar-custom .add-book-btn:hover {
+            background-color: orange;
+            color: #ffffff;
+        }
+        .navbar-custom .navbar-text {
+            color: #ffffff; /* White text for welcome message */
+        }
+        .navbar-custom .logout-btn {
+            border: 1px solid #ffffff; /* White border for logout button */
+            color: #ffffff; /* White text for logout button */
+            background-color: transparent;
+            border-radius: 20px; /* Border radius for logout button */
+        }
+        .navbar-custom .logout-btn:hover {
+            background-color: #ffffff;
+            color: #000000; /* Black text on hover */
+        }
+        .navbar-nav {
+            flex-direction: row;
+        }
+        .navbar-nav .nav-item {
+            margin-left: 1rem; /* Space between nav items */
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Tal's Library</a>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Library Options</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
-                <!-- Add other links here -->
+                <li class="nav-item">
+                    <a class="nav-link add-book-btn" href="{{ url_for('add_book') }}">Add New Book</a>
+                </li>
             </ul>
             <ul class="navbar-nav ml-auto">
                 {% if session.get('logged_in') %}
                     <li class="nav-item">
+                        <form class="form-inline" method="GET" action="{{ url_for('index') }}">
+                            <input class="form-control search-bar" type="search" name="query" placeholder="Find Book" aria-label="Search">
+                            <button class="btn search-btn" type="submit">Search</button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
                         <span class="navbar-text">Welcome, {{ session.get('member_name') }}!</span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="nav-link logout-btn" href="{{ url_for('logout') }}">Logout</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        <a class="nav-link nav-item-login" href="{{ url_for('login') }}">Login</a>
                     </li>
                 {% endif %}
             </ul>

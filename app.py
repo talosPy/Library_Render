@@ -2,8 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import sqlite3
 import hashlib
 
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Set a secret key for session management
+
 
 def check_password(member_name, password):
     conn = sqlite3.connect('library.db')
@@ -17,13 +19,18 @@ def check_password(member_name, password):
         return hashlib.sha256(password.encode()).hexdigest() == stored_password
     return False
 
+
+
 @app.route('/')
 def index():
     if 'logged_in' in session and session['logged_in']:
-        books = get_books()
+        search_query = request.args.get('query', '')
+        books = search_books_in_db(search_query)
         return render_template('index.html', books=books)
     else:
         return redirect(url_for('login'))
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -44,12 +51,16 @@ def login():
 
     return render_template('login.html')
 
+
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     session.pop('member_name', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
+
+
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
@@ -74,6 +85,8 @@ def add_book():
             flash('Please fill in all fields', 'warning')
 
     return render_template('add_book.html')
+
+
 
 @app.route('/edit_book/<int:book_id>', methods=['GET', 'POST'])
 def edit_book(book_id):
@@ -108,6 +121,8 @@ def edit_book(book_id):
         flash('Book not found', 'danger')
         return redirect(url_for('index'))
 
+
+
 @app.route('/delete_book/<int:book_id>')
 def delete_book(book_id):
     conn = sqlite3.connect('library.db')
@@ -118,6 +133,27 @@ def delete_book(book_id):
     flash('Book deleted successfully', 'success')
     return redirect(url_for('index'))
 
+
+
+@app.route('/search', methods=['GET'])
+def search_books():
+    query = request.args.get('query', '')
+    books = search_books_in_db(query)
+    return render_template('index.html', books=books)
+
+
+
+def search_books_in_db(query):
+    conn = sqlite3.connect('library.db', detect_types=sqlite3.PARSE_DECLTYPES)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT * FROM Books WHERE book_name LIKE ?', ('%' + query + '%',))
+    books = c.fetchall()
+    conn.close()
+    return books
+
+
+
 def get_books():
     conn = sqlite3.connect('library.db', detect_types=sqlite3.PARSE_DECLTYPES)
     conn.row_factory = sqlite3.Row
@@ -126,6 +162,8 @@ def get_books():
     books = c.fetchall()
     conn.close()
     return books
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
