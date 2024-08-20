@@ -1,10 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import hashlib
+import os
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Set a secret key for session management
+app.secret_key = os.getenv('FLASK_SECRET_KEY')  # Use the secret key from environment variable
 
 
 def check_password(member_name, password):
