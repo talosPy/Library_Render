@@ -7,6 +7,28 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Tal's Library</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <!-- Add other links here -->
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if session.get('logged_in') %}
+                    <li class="nav-item">
+                        <span class="navbar-text">Welcome, {{ session.get('member_name') }}!</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
     <div class="container mt-5">
         <h1 class="mb-4">Tal's Library</h1>
         <h3 class="mb-4">Books</h3>
