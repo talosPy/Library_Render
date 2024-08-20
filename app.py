@@ -6,18 +6,14 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Set a secret key for session management
 
 def check_password(member_name, password):
-    # Connect to the SQLite database
     conn = sqlite3.connect('library.db')
     c = conn.cursor()
-
-    # Retrieve the hashed password for the member
     c.execute('SELECT password FROM Members WHERE member_name = ?', (member_name,))
     result = c.fetchone()
     conn.close()
 
     if result:
         stored_password = result[0]
-        # Check if the hashed password matches
         return hashlib.sha256(password.encode()).hexdigest() == stored_password
     return False
 
@@ -54,6 +50,73 @@ def logout():
     session.pop('member_name', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
+
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+    if request.method == 'POST':
+        book_name = request.form.get('book_name')
+        year = request.form.get('year')
+        image = request.form.get('image')
+        quantity = int(request.form.get('quantity'))
+
+        if book_name and year and image and quantity:
+            conn = sqlite3.connect('library.db')
+            c = conn.cursor()
+            c.execute('''
+                INSERT INTO Books (book_name, year, image, quantity)
+                VALUES (?, ?, ?, ?)
+            ''', (book_name, year, image, quantity))
+            conn.commit()
+            conn.close()
+            flash('Book added successfully', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Please fill in all fields', 'warning')
+
+    return render_template('add_book.html')
+
+@app.route('/edit_book/<int:book_id>', methods=['GET', 'POST'])
+def edit_book(book_id):
+    conn = sqlite3.connect('library.db')
+    c = conn.cursor()
+    
+    if request.method == 'POST':
+        book_name = request.form.get('book_name')
+        year = request.form.get('year')
+        image = request.form.get('image')
+        quantity = int(request.form.get('quantity'))
+
+        if book_name and year and image and quantity:
+            c.execute('''
+                UPDATE Books
+                SET book_name = ?, year = ?, image = ?, quantity = ?
+                WHERE id = ?
+            ''', (book_name, year, image, quantity, book_id))
+            conn.commit()
+            flash('Book updated successfully', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Please fill in all fields', 'warning')
+
+    c.execute('SELECT * FROM Books WHERE id = ?', (book_id,))
+    book = c.fetchone()
+    conn.close()
+    
+    if book:
+        return render_template('edit_book.html', book=book)
+    else:
+        flash('Book not found', 'danger')
+        return redirect(url_for('index'))
+
+@app.route('/delete_book/<int:book_id>')
+def delete_book(book_id):
+    conn = sqlite3.connect('library.db')
+    c = conn.cursor()
+    c.execute('DELETE FROM Books WHERE id = ?', (book_id,))
+    conn.commit()
+    conn.close()
+    flash('Book deleted successfully', 'success')
+    return redirect(url_for('index'))
 
 def get_books():
     conn = sqlite3.connect('library.db', detect_types=sqlite3.PARSE_DECLTYPES)

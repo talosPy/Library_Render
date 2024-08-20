@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Book - Tal's Library{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Edit Book</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="book_name">Book Name</label>
+            <input type="text" class="form-control" id="book_name" name="book_name" value="{{ book['book_name'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="year">Year</label>
+            <input type="number" class="form-control" id="year" name="year" value="{{ book['year'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="image">Image URL</label>
+            <input type="text" class="form-control" id="image" name="image" value="{{ book['image'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" value="{{ book['quantity'] }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Book</button>
+    </form>
+{% endblock %}
