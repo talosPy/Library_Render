@@ -1,14 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import hashlib
-import os
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY')  # Use the secret key from environment variable
+app.secret_key = 'your_secret_key_here'  # Replace this with a strong, random secret key
 
 
 def check_password(member_name, password):
@@ -28,8 +25,7 @@ def check_password(member_name, password):
 @app.route('/')
 def index():
     if 'logged_in' in session and session['logged_in']:
-        search_query = request.args.get('query', '')
-        books = search_books_in_db(search_query)
+        books = get_books()
         return render_template('index.html', books=books)
     else:
         return redirect(url_for('login'))
@@ -136,25 +132,6 @@ def delete_book(book_id):
     conn.close()
     flash('Book deleted successfully', 'success')
     return redirect(url_for('index'))
-
-
-
-@app.route('/search', methods=['GET'])
-def search_books():
-    query = request.args.get('query', '')
-    books = search_books_in_db(query)
-    return render_template('index.html', books=books)
-
-
-
-def search_books_in_db(query):
-    conn = sqlite3.connect('library.db', detect_types=sqlite3.PARSE_DECLTYPES)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute('SELECT * FROM Books WHERE book_name LIKE ?', ('%' + query + '%',))
-    books = c.fetchall()
-    conn.close()
-    return books
 
 
 
