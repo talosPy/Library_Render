@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import hashlib
+from dotenv import load_dotenv
+import os
 
-
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Replace this with a strong, random secret key
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
 
 
 def check_password(member_name, password):
